@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The FrameLayout here is essential. When ScrollView is the top level element, -->
+<!-- it can lead to drawing issues beyond the bounds set by Compose. -->
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <ScrollView
+        android:id="@+id/scroll_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:requiresFadingEdge="vertical"
+        android:fadingEdgeLength="70dp"
+        tools:ignore="HardcodedText,UselessParent">
+
+        <LinearLayout
+            android:id="@+id/linear_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="16dp"
+            android:orientation="vertical">
+
+            <TextView
+                style="@style/VerticalFadingEdgeTextViewStyle"
+                android:background="#00ff00"
+                android:text="1" />
+
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="16dp" />
+
+            <TextView
+                style="@style/VerticalFadingEdgeTextViewStyle"
+                android:background="#0000ff"
+                android:text="2" />
+
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="16dp" />
+
+            <TextView
+                style="@style/VerticalFadingEdgeTextViewStyle"
+                android:background="#ff0000"
+                android:text="3" />
+
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="16dp" />
+
+            <TextView
+                style="@style/VerticalFadingEdgeTextViewStyle"
+                android:background="#00ff00"
+                android:text="4" />
+
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="16dp" />
+
+            <TextView
+                style="@style/VerticalFadingEdgeTextViewStyle"
+                android:background="#0000ff"
+                android:text="5" />
+
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="16dp" />
+
+            <TextView
+                style="@style/VerticalFadingEdgeTextViewStyle"
+                android:background="#ff0000"
+                android:text="6" />
+
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="16dp" />
+
+            <TextView
+                style="@style/VerticalFadingEdgeTextViewStyle"
+                android:background="#00ff00"
+                android:text="7" />
+
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="16dp" />
+
+            <TextView
+                style="@style/VerticalFadingEdgeTextViewStyle"
+                android:background="#0000ff"
+                android:text="8" />
+
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="16dp" />
+
+            <TextView
+                style="@style/VerticalFadingEdgeTextViewStyle"
+                android:background="#ff0000"
+                android:text="9" />
+
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="16dp" />
+
+            <TextView
+                style="@style/VerticalFadingEdgeTextViewStyle"
+                android:background="#00ff00"
+                android:text="10" />
+
+        </LinearLayout>
+
+    </ScrollView>
+
+</FrameLayout>
