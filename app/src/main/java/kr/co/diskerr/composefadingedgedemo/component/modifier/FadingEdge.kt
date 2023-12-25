@@ -188,14 +188,6 @@ fun Modifier.fadingEdge(
             if (position.includes(EdgePosition.Start) && state.canScrollBackward) {
                 val passedScroll = with(state.layoutInfo) {
                     visibleItemsInfo
-                        .firstOrNull { it.index == 0 }?.let {
-                            println("### size: ${it.size}")
-                            println("### offset: ${it.offset}")
-                            println("### padding: $beforeContentPadding")
-                            println("### viewport start: $viewportStartOffset")
-                        }
-
-                    visibleItemsInfo
                         .firstOrNull { it.index == 0 }
                         ?.offset
                         ?.absoluteValue
