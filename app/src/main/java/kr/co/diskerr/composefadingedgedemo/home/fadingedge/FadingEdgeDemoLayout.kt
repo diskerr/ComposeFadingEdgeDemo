@@ -1,6 +1,6 @@
 package kr.co.diskerr.composefadingedgedemo.home.fadingedge
 
-import androidx.compose.foundation.border
+import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -23,7 +23,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import kr.co.diskerr.composefadingedgedemo.component.modifier.DefaultHorizontalEdgeStyle
 import kr.co.diskerr.composefadingedgedemo.component.modifier.DefaultVerticalEdgeStyle
-import kr.co.diskerr.composefadingedgedemo.component.modifier.EdgeOrientation
 import kr.co.diskerr.composefadingedgedemo.component.modifier.EdgePosition
 import kr.co.diskerr.composefadingedgedemo.component.modifier.EdgeStyle
 
@@ -31,12 +30,12 @@ import kr.co.diskerr.composefadingedgedemo.component.modifier.EdgeStyle
 fun FadingEdgeDemoLayout(
     title: String,
     brushSelectionEnabled: Boolean = true,
-    content: @Composable (EdgeOrientation, EdgeStyle, EdgePosition) -> Unit
+    content: @Composable (Boolean, EdgeStyle, EdgePosition) -> Unit
 ) {
-    var orientation by remember { mutableStateOf(EdgeOrientation.Vertical) }
+    var isVertical by remember { mutableStateOf(true) }
     var demoEdgeStyle by remember { mutableStateOf(DemoEdgeStyle.DefaultDstOut) }
     val style by remember {
-        derivedStateOf { getMatchingEdgeStyle(orientation = orientation, style = demoEdgeStyle) }
+        derivedStateOf { getMatchingEdgeStyle(isVertical = isVertical, style = demoEdgeStyle) }
     }
 
     var position by remember { mutableStateOf(EdgePosition.Both) }
@@ -53,13 +52,12 @@ fun FadingEdgeDemoLayout(
         Box(
             modifier = Modifier
                 .weight(weight = 1f, fill = false)
-                .border(width = 1.dp, color = Color.Black)
         ) {
-            content(orientation, style, position)
+            content(isVertical, style, position)
         }
 
         BottomOptionBar(
-            onOrientationChanged = { orientation = it },
+            onOrientationChanged = { isVertical = it },
             onStyleChanged = { demoEdgeStyle = it },
             onPositionChanged = { position = it },
             modifier = Modifier
@@ -78,7 +76,7 @@ enum class DemoEdgeStyle(val label: String) {
 
 @Composable
 private fun BottomOptionBar(
-    onOrientationChanged: (EdgeOrientation) -> Unit,
+    onOrientationChanged: (Boolean) -> Unit,
     onStyleChanged: (DemoEdgeStyle) -> Unit,
     onPositionChanged: (EdgePosition) -> Unit,
     modifier: Modifier = Modifier,
@@ -93,9 +91,9 @@ private fun BottomOptionBar(
         ) {
             Text(text = "Orientation")
 
-            EdgeOrientation.entries.forEach {
+            Orientation.entries.forEach {
                 TextButton(
-                    onClick = { onOrientationChanged(it) }
+                    onClick = { onOrientationChanged(it == Orientation.Vertical) }
                 ) {
                     Text(text = it.name)
                 }
@@ -136,25 +134,20 @@ private fun BottomOptionBar(
     }
 }
 
-private val HorizontalSrcOverEdgeStyle =
-    EdgeStyle.createViewCompatibleStyle(Color.Black, EdgeOrientation.Horizontal)
+/* private */ val VerticalSrcOverEdgeStyle =
+    EdgeStyle.createViewCompatibleStyle(color = Color(0xFFFAF9FD), isVertical = true)
 
-private val VerticalSrcOverEdgeStyle =
-    EdgeStyle.createViewCompatibleStyle(Color.Black, EdgeOrientation.Vertical)
+/* private */ val HorizontalSrcOverEdgeStyle =
+    EdgeStyle.createViewCompatibleStyle(color = Color(0xFFFAF9FD), isVertical = false)
 
-private fun getMatchingEdgeStyle(orientation: EdgeOrientation, style: DemoEdgeStyle): EdgeStyle {
+private fun getMatchingEdgeStyle(isVertical: Boolean, style: DemoEdgeStyle): EdgeStyle {
     return when (style) {
         DemoEdgeStyle.DefaultDstOut -> {
-            when (orientation) {
-                EdgeOrientation.Horizontal -> DefaultHorizontalEdgeStyle
-                EdgeOrientation.Vertical -> DefaultVerticalEdgeStyle
-            }
+            if (isVertical) DefaultVerticalEdgeStyle else DefaultHorizontalEdgeStyle
         }
+
         DemoEdgeStyle.SrcOver -> {
-            when (orientation) {
-                EdgeOrientation.Horizontal -> HorizontalSrcOverEdgeStyle
-                EdgeOrientation.Vertical -> VerticalSrcOverEdgeStyle
-            }
+            if (isVertical) VerticalSrcOverEdgeStyle else HorizontalSrcOverEdgeStyle
         }
     }
 }

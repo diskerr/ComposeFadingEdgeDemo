@@ -4,14 +4,13 @@
     <style name="Theme.ComposeFadingEdgeDemo" parent="android:Theme.Material.Light.NoActionBar" />
 
     <style name="FadingEdgeTextViewStyle">
-        <item name="android:gravity">center</item>
-        <item name="android:textColor">#1C1B1F</item>
-        <item name="android:textSize">56sp</item>
+        <item name="android:gravity">center_vertical|start</item>
+        <item name="android:textSize">16sp</item>
     </style>
 
     <style name="VerticalFadingEdgeTextViewStyle" parent="FadingEdgeTextViewStyle">
         <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">150dp</item>
+        <item name="android:layout_height">48dp</item>
     </style>
 
     <style name="HorizontalFadingEdgeTextViewStyle" parent="FadingEdgeTextViewStyle">
