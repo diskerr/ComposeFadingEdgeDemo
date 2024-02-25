@@ -31,6 +31,7 @@ fun DummyBox(
     ) {
         Text(
             text = "$number",
+            color = Color.White,
             style = MaterialTheme.typography.displayLarge
         )
     }

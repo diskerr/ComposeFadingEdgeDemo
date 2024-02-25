@@ -1,5 +1,6 @@
 package kr.co.diskerr.composefadingedgedemo.component.modifier
 
+import android.view.View
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -32,30 +33,31 @@ import kotlin.math.absoluteValue
 import kotlin.math.min
 
 /**
- * Modify element to include horizontal fading edges for a horizontally scrollable container.
- * The default look and behavior is identical to that of [View][android.view.View]'s fading edge.
+ * Modify element to include vertical fading edges for a vertically scrollable container.
+ * The default look and behavior is identical to that of [View]'s fading edge.
  *
- * It must be applied after Modifier.horizontalScroll().
+ * It must be applied after [Modifier.verticalScroll].
  */
-fun Modifier.horizontalFadingEdge(
+fun Modifier.verticalFadingEdge(
     state: ScrollState,
     edgeLength: Dp,
-    style: EdgeStyle = DefaultHorizontalEdgeStyle,
+    style: EdgeStyle = DefaultVerticalEdgeStyle,
     position: EdgePosition = EdgePosition.Both
 ) = this.then(
     Modifier
         .fadingEdge(
             state = state,
             edgeLength = edgeLength,
-            orientation = EdgeOrientation.Horizontal,
+            isVertical = true,
             style = style,
             position = position
         )
 )
 
 /**
- * Modify element to include horizontal fading edges for LazyRow.
- * The default look and behavior is identical to that of [View][android.view.View]'s fading edge.
+ * Modify element to include horizontal fading edges for LazyColumn.
+ *
+ * The default look and behavior is identical to that of [View]'s fading edge.
  *
  * Limitation:
  * This only works correctly if the width of the first and last item (including content padding,
@@ -64,6 +66,71 @@ fun Modifier.horizontalFadingEdge(
  * the total scroll area size in advance due to their lazy nature, unlike scrollable Column or Row.
  * Additionally, the measured sizes of items that are not yet visible (i.e., prefetched items)
  * are not accessible outside of LazyLists.
+ *
+ * @param style The style of the fading edge. Use the default value if the background color of
+ *  the composable, to which this modifier will be applied, is transparent or if blending with
+ *  the parent composable's background color is desired.
+ *  If a solid background color is specified for the composable, you should use a style returned by
+ *  the [EdgeStyle.createViewCompatibleStyle] method. This mirrors the default behavior of [View]
+ *  when a solid background color is set for a view.
+ */
+fun Modifier.verticalFadingEdge(
+    state: LazyListState,
+    edgeLength: Dp,
+    style: EdgeStyle = DefaultVerticalEdgeStyle,
+    position: EdgePosition = EdgePosition.Both
+) = this.then(
+    Modifier
+        .fadingEdge(
+            state = state,
+            edgeLength = edgeLength,
+            isVertical = true,
+            style = style,
+            position = position
+        )
+)
+
+/**
+ * Modify element to include horizontal fading edges for a horizontally scrollable container.
+ *
+ * The default look and behavior is identical to that of [View]'s fading edge.
+ *
+ * Limitation:
+ * This only works correctly if the width of the first and last item (including content padding,
+ * if any) is equal to or greater than [edgeLength]. Otherwise, the edge will suddenly shorten
+ * when the first or last item starts to appear. This occurs because LazyLists cannot measure
+ * the total scroll area size in advance due to their lazy nature, unlike scrollable Column or Row.
+ * Additionally, the measured sizes of items that are not yet visible (i.e., prefetched items)
+ * are not accessible outside of LazyLists.
+ *
+ * @param style The style of the fading edge. Use the default value if the background color of
+ *  the composable, to which this modifier will be applied, is transparent or if blending with
+ *  the parent composable's background color is desired.
+ *  If a solid background color is specified for the composable, you should use a style returned by
+ *  the [EdgeStyle.createViewCompatibleStyle] method. This mirrors the default behavior of [View]
+ *  when a solid background color is set for a view.
+ */
+fun Modifier.horizontalFadingEdge(
+    state: ScrollState,
+    edgeLength: Dp,
+    style: EdgeStyle = DefaultHorizontalEdgeStyle,
+    position: EdgePosition = EdgePosition.Both
+) = this.then(
+    Modifier
+        .fadingEdge(
+            state = state,
+            edgeLength = edgeLength,
+            isVertical = false,
+            style = style,
+            position = position
+        )
+)
+
+/**
+ * Modify element to include horizontal fading edges for LazyRow.
+ *
+ * The default look and behavior is identical to that of [View]'s fading edge.
+ * Refer to [verticalFadingEdge] for a detailed explanation.
  */
 fun Modifier.horizontalFadingEdge(
     state: LazyListState,
@@ -75,51 +142,7 @@ fun Modifier.horizontalFadingEdge(
         .fadingEdge(
             state = state,
             edgeLength = edgeLength,
-            orientation = EdgeOrientation.Horizontal,
-            style = style,
-            position = position
-        )
-)
-
-/**
- * Modify element to include vertical fading edges for a vertically scrollable container.
- * The default look and behavior is identical to that of [View][android.view.View]'s fading edge.
- *
- * It must be applied after Modifier.verticalScroll().
- */
-fun Modifier.verticalFadingEdge(
-    state: ScrollState,
-    edgeLength: Dp,
-    style: EdgeStyle = DefaultVerticalEdgeStyle,
-    position: EdgePosition = EdgePosition.Both
-) = this.then(
-    Modifier
-        .fadingEdge(
-            state = state,
-            edgeLength = edgeLength,
-            orientation = EdgeOrientation.Vertical,
-            style = style,
-            position = position
-        )
-)
-
-/**
- * Modify element to include horizontal fading edges for LazyColumn.
- * The default look and behavior is identical to that of [View][android.view.View]'s fading edge.
- *
- * Limitation: see [horizontalFadingEdge]
- */
-fun Modifier.verticalFadingEdge(
-    state: LazyListState,
-    edgeLength: Dp,
-    style: EdgeStyle = DefaultVerticalEdgeStyle,
-    position: EdgePosition = EdgePosition.Both
-) = this.then(
-    Modifier
-        .fadingEdge(
-            state = state,
-            edgeLength = edgeLength,
-            orientation = EdgeOrientation.Vertical,
+            isVertical = false,
             style = style,
             position = position
         )
@@ -128,7 +151,7 @@ fun Modifier.verticalFadingEdge(
 fun Modifier.fadingEdge(
     state: ScrollState,
     edgeLength: Dp,
-    orientation: EdgeOrientation,
+    isVertical: Boolean,
     style: EdgeStyle,
     position: EdgePosition
 ) = this.then(
@@ -140,17 +163,14 @@ fun Modifier.fadingEdge(
             val edgeLengthPx = edgeLength.toPx()
             val scrollValue = state.value.toFloat()
             val scrollMaxValue = state.maxValue.toFloat()
-            val size = when (orientation) {
-                EdgeOrientation.Horizontal -> size.width
-                EdgeOrientation.Vertical -> size.height
-            }
+            val size = if (isVertical) size.height else size.width
 
             if (position.includes(EdgePosition.Start) && state.canScrollBackward) {
                 drawFadingEdge(
                     startInset = scrollValue,
                     endInset = size - scrollValue - min(edgeLengthPx, scrollValue),
                     style = style,
-                    orientation = orientation
+                    isVertical = isVertical
                 )
             }
 
@@ -159,8 +179,8 @@ fun Modifier.fadingEdge(
                 drawFadingEdge(
                     startInset = size - remainingScroll - min(edgeLengthPx, remainingScroll),
                     endInset = remainingScroll,
+                    isVertical = isVertical,
                     style = style,
-                    orientation = orientation,
                     reverse = true
                 )
             }
@@ -170,7 +190,7 @@ fun Modifier.fadingEdge(
 fun Modifier.fadingEdge(
     state: LazyListState,
     edgeLength: Dp,
-    orientation: EdgeOrientation,
+    isVertical: Boolean,
     style: EdgeStyle,
     position: EdgePosition
 ) = this.then(
@@ -180,10 +200,7 @@ fun Modifier.fadingEdge(
             drawContent()
 
             val edgeLengthPx = edgeLength.toPx()
-            val size = when (orientation) {
-                EdgeOrientation.Horizontal -> size.width
-                EdgeOrientation.Vertical -> size.height
-            }
+            val size = if (isVertical) size.height else size.width
 
             if (position.includes(EdgePosition.Start) && state.canScrollBackward) {
                 val passedScroll = with(state.layoutInfo) {
@@ -198,8 +215,8 @@ fun Modifier.fadingEdge(
                 drawFadingEdge(
                     startInset = 0f,
                     endInset = size - min(edgeLengthPx, passedScroll),
-                    style = style,
-                    orientation = orientation,
+                    isVertical = isVertical,
+                    style = style
                 )
             }
 
@@ -215,8 +232,8 @@ fun Modifier.fadingEdge(
                 drawFadingEdge(
                     startInset = size - min(edgeLengthPx, remainingScroll),
                     endInset = 0f,
+                    isVertical = isVertical,
                     style = style,
-                    orientation = orientation,
                     reverse = true
                 )
             }
@@ -226,8 +243,8 @@ fun Modifier.fadingEdge(
 private fun DrawScope.drawFadingEdge(
     startInset: Float,
     endInset: Float,
+    isVertical: Boolean,
     style: EdgeStyle,
-    orientation: EdgeOrientation,
     reverse: Boolean = false
 ) {
     var left = 0f
@@ -235,15 +252,12 @@ private fun DrawScope.drawFadingEdge(
     var right = 0f
     var bottom = 0f
 
-    when (orientation) {
-        EdgeOrientation.Horizontal -> {
-            left = startInset
-            right = endInset
-        }
-        EdgeOrientation.Vertical -> {
-            top = startInset
-            bottom = endInset
-        }
+    if (isVertical) {
+        top = startInset
+        bottom = endInset
+    } else {
+        left = startInset
+        right = endInset
     }
 
     inset(left = left, top = top, right = right, bottom = bottom) {
@@ -251,11 +265,6 @@ private fun DrawScope.drawFadingEdge(
             drawRect(brush = style.brush, blendMode = style.blendMode)
         }
     }
-}
-
-@Immutable
-enum class EdgeOrientation {
-    Horizontal, Vertical
 }
 
 @Immutable
@@ -272,22 +281,25 @@ data class EdgeStyle(
 ) {
     companion object {
         /**
-         * Creates a fading edge style that is exactly the same as [android.view.View]'s
-         * fading edge, when a solid background color is specified to the View instance.
+         * Creates a fading edge style that is exactly the same as [View]'s
+         * fading edge, when a solid background color is specified for the View.
+         *
+         * @param color The solid background color of a view on which it will be drawn.
          */
         fun createViewCompatibleStyle(
-            backgroundColor: Color,
-            orientation: EdgeOrientation
+            color: Color,
+            isVertical: Boolean
         ): EdgeStyle {
             val colorStops = arrayOf(
-                0f to backgroundColor.copy(1f),
-                1f to backgroundColor.copy(0f),
+                0f to color.copy(1f),
+                1f to color.copy(0f),
             )
 
             return EdgeStyle(
-                brush = when (orientation) {
-                    EdgeOrientation.Horizontal -> Brush.horizontalGradient(*colorStops)
-                    EdgeOrientation.Vertical -> Brush.verticalGradient(*colorStops)
+                brush = if (isVertical) {
+                    Brush.verticalGradient(*colorStops)
+                } else {
+                    Brush.horizontalGradient(*colorStops)
                 },
                 blendMode = BlendMode.SrcOver
             )
